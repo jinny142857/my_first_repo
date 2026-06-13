@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Settings } from 'lucide-react';
 import { GachaCapsule } from './components/GachaCapsule';
 import { TeacherSettingsModal } from './components/TeacherSettingsModal';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -152,9 +151,13 @@ function App() {
         </div>
       </div>
 
-      <button className="hidden-settings-btn" onClick={() => setIsModalOpen(true)} title="설정 (Ctrl+Shift+T)">
-        <Settings size={20} />
-      </button>
+        <button 
+          className="hidden-settings-btn" 
+          onClick={() => setIsModalOpen(true)}
+          title="선생님 설정 (Ctrl+Shift+T)"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>settings</span>
+        </button>
 
       <TeacherSettingsModal 
         isOpen={isModalOpen} 

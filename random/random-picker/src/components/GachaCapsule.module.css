@@ -1,31 +1,19 @@
-.capsules-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  margin: 2rem 0;
-  min-height: 200px;
-}
-
 .capsule-container {
-  width: 120px;
-  height: 120px;
-  position: relative;
-  cursor: pointer;
+  width: 100px;
+  height: 100px;
   perspective: 1000px;
-  animation: dropIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+  cursor: pointer;
+  animation: dropIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+  transition: transform 0.3s ease;
 }
 
-@keyframes dropIn {
-  0% {
-    transform: translateY(-200px) scale(0.5) rotate(-20deg);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0) scale(1) rotate(0);
-    opacity: 1;
-  }
+.capsule-container:hover {
+  transform: translateY(-5px) scale(1.05);
+}
+
+.capsule-container.is-opened {
+  cursor: default;
+  transform: none;
 }
 
 .capsule-inner {
@@ -96,6 +84,23 @@
   animation: popText 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   opacity: 0;
   transform: scale(0.5);
+}
+
+@keyframes dropIn {
+  0% {
+    transform: translateY(-200px) scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(20px) scale(1.1);
+  }
+  80% {
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes popText {

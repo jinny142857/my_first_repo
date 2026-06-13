@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 import styles from './TeacherSettingsModal.module.css';
 
 interface TeacherSettingsModalProps {
@@ -69,8 +68,8 @@ export const TeacherSettingsModal: React.FC<TeacherSettingsModalProps> = ({
       <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
         <div className={styles['modal-header']}>
           <h2>선생님 전용 설정</h2>
-          <button className={styles['close-button']} onClick={onClose}>
-            <X size={24} />
+          <button className={styles['close-button']} onClick={onClose} title="닫기">
+            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>close</span>
           </button>
         </div>
 
@@ -107,13 +106,13 @@ export const TeacherSettingsModal: React.FC<TeacherSettingsModalProps> = ({
                   onClick={() => handleRemoveFixedResult(index)}
                   title="삭제"
                 >
-                  <X size={16} />
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>close</span>
                 </button>
               </div>
             ))}
           </div>
           <button className={styles['add-button']} onClick={handleAddFixedResult}>
-            + 조작 추가
+            <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', marginRight: '4px' }}>add</span> 추가하기
           </button>
         </div>
 
