@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Compass, Target, Shield, Eye, ArrowRight, Check } from "lucide-react";
+import { Compass, Target, Shield, Eye, ArrowRight, Check, X } from "lucide-react";
 
 interface GuideItem {
   id: number;
@@ -11,11 +10,15 @@ interface GuideItem {
   icon: any;
 }
 
-export default function EthicsGuide() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const redirectPath = searchParams.get("redirect") || "/";
-  
+interface EthicsGuideModalProps {
+  isOpen: boolean;
+  isGate: boolean;
+  onClose: () => void;
+}
+
+export default function EthicsGuideModal({ isOpen, isGate, onClose }: EthicsGuideModalProps) {
+  if (!isOpen) return null;
+
   const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -89,14 +92,12 @@ export default function EthicsGuide() {
     if (!containerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
     
-    // If user scrolled to 90% of the container, mark as read
     if (scrollTop + clientHeight >= scrollHeight - 50) {
       setScrolledToBottom(true);
     }
   };
 
   useEffect(() => {
-    // Check initial layout to see if it doesn't scroll (already at bottom)
     const checkHeight = () => {
       if (containerRef.current) {
         const { scrollHeight, clientHeight } = containerRef.current;
@@ -108,80 +109,91 @@ export default function EthicsGuide() {
     checkHeight();
     window.addEventListener("resize", checkHeight);
     return () => window.removeEventListener("resize", checkHeight);
-  }, []);
+  }, [isOpen]);
 
   const handleConsent = () => {
-    if (!scrolledToBottom) {
+    if (isGate && !scrolledToBottom) {
       alert("윤리 가이드를 아래로 스크롤하여 끝까지 읽어주세요.");
       return;
     }
-    localStorage.setItem("ai_ethics_consent", "true");
-    navigate(redirectPath);
+    onClose();
   };
 
   return (
-    <div className="ethics-page-container fade-in">
-      <div className="ethics-header">
-        <h1 className="gradient-text">초등 AI 윤리 핵심가이드</h1>
-        <p className="ethics-subtitle">
-          TaskFlow를 시작하기 전에, 안전하고 올바른 생성형 AI 사용을 위한 약속을 꼭 읽어주세요!
-        </p>
-      </div>
-
-      <div 
-        className="ethics-scroll-container glass-panel" 
-        ref={containerRef} 
-        onScroll={handleScroll}
-      >
-        <div className="guides-grid">
-          {guides.map((guide) => {
-            const IconComponent = guide.icon;
-            return (
-              <div key={guide.id} className="guide-card">
-                <div className="guide-card-header">
-                  <div className="guide-index-badge">가이드 {guide.id}</div>
-                  <div className="guide-value-badges">
-                    {guide.values.map((val, idx) => (
-                      <span key={idx} className={`value-badge badge-${val.type}`}>
-                        {val.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="guide-card-body">
-                  <div className="guide-icon-wrapper">
-                    <IconComponent size={28} />
-                  </div>
-                  <div className="guide-text-content">
-                    <h3 className="guide-section-title">{guide.title}</h3>
-                    <h4 className="guide-main-statement">{guide.subTitle}</h4>
-                    <p className="guide-description">{guide.description}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="ethics-footer-actions">
-        <div className="scroll-indicator-container">
-          {!scrolledToBottom && (
-            <p className="scroll-warning-text animate-pulse">
-              💡 가이드를 아래로 스크롤하여 모두 읽어주세요.
+    <div className="modal-overlay ethics-modal-overlay">
+      <div className="modal-container ethics-modal-container glass-panel fade-in">
+        <div className="modal-header">
+          <div>
+            <h2 className="gradient-text" style={{ fontSize: "1.45rem", fontWeight: 700 }}>초등 AI 윤리 핵심가이드</h2>
+            <p className="ethics-subtitle" style={{ fontSize: "0.85rem", marginTop: "4px" }}>
+              안전하고 올바른 생성형 AI 사용을 위한 약속을 꼭 읽어주세요!
             </p>
+          </div>
+          {!isGate && (
+            <button className="modal-close-btn" onClick={onClose}>
+              <X size={20} />
+            </button>
           )}
         </div>
 
-        <button 
-          onClick={handleConsent}
-          className={`btn btn-lg consent-btn ${scrolledToBottom ? "btn-primary" : "btn-disabled"}`}
-          disabled={!scrolledToBottom}
+        <div 
+          className="modal-body ethics-modal-body" 
+          ref={containerRef} 
+          onScroll={handleScroll}
         >
-          <Check size={20} style={{ marginRight: '8px' }} />
-          <span>나는 윤리 핵심가이드를 빠짐없이 읽고 이를 실천하겠습니다.</span>
-          <ArrowRight size={18} style={{ marginLeft: '12px' }} />
-        </button>
+          <div className="guides-grid select-none">
+            {guides.map((guide) => {
+              const IconComponent = guide.icon;
+              return (
+                <div key={guide.id} className="guide-card">
+                  <div className="guide-card-header">
+                    <div className="guide-index-badge">가이드 {guide.id}</div>
+                    <div className="guide-value-badges">
+                      {guide.values.map((val, idx) => (
+                        <span key={idx} className={`value-badge badge-${val.type}`}>
+                          {val.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="guide-card-body">
+                    <div className="guide-icon-wrapper">
+                      <IconComponent size={28} />
+                    </div>
+                    <div className="guide-text-content">
+                      <h3 className="guide-section-title">{guide.title}</h3>
+                      <h4 className="guide-main-statement">{guide.subTitle}</h4>
+                      <p className="guide-description">{guide.description}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="modal-footer ethics-modal-footer">
+          <div className="ethics-footer-actions" style={{ width: "100%" }}>
+            {isGate && !scrolledToBottom && (
+              <div className="scroll-indicator-container">
+                <p className="scroll-warning-text animate-pulse">
+                  💡 가이드를 아래로 스크롤하여 모두 읽어주세요.
+                </p>
+              </div>
+            )}
+            
+            <button 
+              onClick={handleConsent}
+              className={`btn btn-lg consent-btn ${(!isGate || scrolledToBottom) ? "btn-primary" : "btn-disabled"}`}
+              disabled={isGate && !scrolledToBottom}
+              style={{ width: "100%" }}
+            >
+              <Check size={20} style={{ marginRight: '8px' }} />
+              <span>나는 윤리 핵심가이드를 빠짐없이 읽고 이를 실천하겠습니다.</span>
+              {isGate && <ArrowRight size={18} style={{ marginLeft: '12px' }} />}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
