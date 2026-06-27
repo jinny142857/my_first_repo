@@ -10,7 +10,7 @@ import "./index.css";
 
 function App() {
   const [hasConsented, setHasConsented] = useState(() => {
-    return localStorage.getItem("ai_ethics_consent") === "true";
+    return localStorage.getItem("taskflow_ethics_consent") === "true";
   });
   const [modalType, setModalType] = useState<"privacy" | "terms" | null>(null);
   const [ethicsModalOpen, setEthicsModalOpen] = useState(false);
@@ -20,7 +20,7 @@ function App() {
   };
 
   const handleConsentComplete = () => {
-    localStorage.setItem("ai_ethics_consent", "true");
+    localStorage.setItem("taskflow_ethics_consent", "true");
     setHasConsented(true);
   };
 
@@ -32,13 +32,6 @@ function App() {
             <Link to="/">TaskFlow</Link>
           </div>
           <div className="nav-links">
-            <button 
-              onClick={() => setEthicsModalOpen(true)} 
-              className="nav-btn" 
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit' }}
-            >
-              AI 윤리가이드
-            </button>
             <Link to="/login" className="nav-btn">교사 로그인</Link>
             <Link to="/signup" className="nav-btn primary">학생 회원가입</Link>
           </div>
@@ -61,6 +54,8 @@ function App() {
               <span>개인정보책임자: 나혜진 교사 (서울원광초등학교)</span>
             </div>
             <div className="footer-links">
+              <button onClick={() => setEthicsModalOpen(true)} className="footer-link">AI 윤리가이드</button>
+              <span>|</span>
               <button onClick={() => openModal("terms")} className="footer-link">이용약관</button>
               <span>|</span>
               <button onClick={() => openModal("privacy")} className="footer-link">개인정보처리방침</button>
