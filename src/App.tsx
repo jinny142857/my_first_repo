@@ -1,9 +1,21 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import EthicsGuide from "./pages/EthicsGuide";
 import "./index.css";
+
+function EthicsGuard({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const hasConsented = localStorage.getItem("ai_ethics_consent") === "true";
+  
+  if (!hasConsented) {
+    return <Navigate to={`/ethics-guide?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  }
+  
+  return <>{children}</>;
+}
 
 function App() {
   return (
@@ -14,6 +26,7 @@ function App() {
             <Link to="/">TaskFlow</Link>
           </div>
           <div className="nav-links">
+            <Link to="/ethics-guide" className="nav-btn">AI 윤리가이드</Link>
             <Link to="/login" className="nav-btn">교사 로그인</Link>
             <Link to="/signup" className="nav-btn primary">학생 회원가입</Link>
           </div>
@@ -22,9 +35,10 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/ethics-guide" element={<EthicsGuide />} />
+            <Route path="/login" element={<EthicsGuard><Login /></EthicsGuard>} />
+            <Route path="/signup" element={<EthicsGuard><Signup /></EthicsGuard>} />
+            <Route path="/dashboard" element={<EthicsGuard><Dashboard /></EthicsGuard>} />
           </Routes>
         </main>
       </div>
